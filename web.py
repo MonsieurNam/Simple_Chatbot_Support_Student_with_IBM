@@ -34,6 +34,9 @@ dsn_driver = os.getenv("dsn_driver")
 dsn_protocol = os.getenv("dsn_protocol")
 dsn_security = os.getenv("dsn_security")
 
+# Assistant API
+kommunicate_app_id = os.getenv('KOMMUNICATE_APP_ID')
+
 # Function to establish a database connection
 def get_db_connection():
     dsn = (
@@ -137,13 +140,13 @@ def home():
                     students.append(result)
                     result = ibm_db.fetch_assoc(stmt)
                 app.logger.debug(f"Fetched {len(students)} students from the database.")
-                return render_template('./index.html', students=students)
+                return render_template('./index.html', students=students, kommunicate_app_id=kommunicate_app_id)
 
             except Exception as e:
                 app.logger.error(f"Error fetching data: {e}")
                 traceback.print_exc()
                 flash(f"Lỗi khi lấy dữ liệu: {e}", 'danger')
-                return render_template('./index.html', students=None)
+                return render_template('./index.html', students=None, kommunicate_app_id=kommunicate_app_id)
 
             finally:
                 if conn:
@@ -152,7 +155,7 @@ def home():
 
     else:
         flash("Không thể kết nối cơ sở dữ liệu.", 'danger')
-        return render_template('./index.html', students=None)
+        return render_template('./index.html', students=None, kommunicate_app_id=kommunicate_app_id)
 
 # Error Handler for 500 Errors
 @app.errorhandler(500)
