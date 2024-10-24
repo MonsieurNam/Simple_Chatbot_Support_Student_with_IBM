@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Sinh viên</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Danh sách Sinh viên</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Button to open Add Student form -->
+        <button class="btn btn-primary mb-3" onclick="showAddForm()">Thêm Sinh viên Mới</button>
+
+        <!-- Add Student Form -->
+        <div id="addForm" style="display:none;">
+            <h2>Thêm Sinh viên Mới</h2>
+            <form method="POST" action="{{ url_for('home') }}">
+                <input type="hidden" name="add_student" value="1">
+                <div class="form-group">
+                    <label for="TEN_SINH_VIEN">Tên Sinh Viên</label>
+                    <input type="text" class="form-control" id="TEN_SINH_VIEN" name="TEN_SINH_VIEN" required>
+                </div>
+                <div class="form-group">
+                    <label for="NGAY_SINH">Ngày Sinh</label>
+                    <input type="date" class="form-control" id="NGAY_SINH" name="NGAY_SINH" required>
+                </div>
+                <div class="form-group">
+                    <label for="MA_SV">Mã SV</label>
+                    <input type="text" class="form-control" id="MA_SV" name="MA_SV" required>
+                </div>
+                <div class="form-group">
+                    <label for="CHUYEN_NGANH">Chuyên Ngành</label>
+                    <input type="text" class="form-control" id="CHUYEN_NGANH" name="CHUYEN_NGANH" required>
+                </div>
+                <button type="submit" class="btn btn-success">Thêm Sinh viên</button>
+                <button type="button" class="btn btn-secondary" onclick="hideAddForm()">Hủy</button>
+            </form>
+        </div>
+
+        <!-- Edit Student Form -->
+        <div id="editForm" style="display:none;">
+            <h2>Sửa Thông tin Sinh viên</h2>
+            <form method="POST" action="{{ url_for('home') }}">
+                <input type="hidden" name="edit_student" value="1">
+                <input type="hidden" id="edit_MA_SV" name="MA_SV">
+                <div class="form-group">
+                    <label for="edit_TEN_SINH_VIEN">Tên Sinh Viên</label>
+                    <input type="text" class="form-control" id="edit_TEN_SINH_VIEN" name="TEN_SINH_VIEN" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_NGAY_SINH">Ngày Sinh</label>
+                    <input type="date" class="form-control" id="edit_NGAY_SINH" name="NGAY_SINH" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_CHUYEN_NGANH">Chuyên Ngành</label>
+                    <input type="text" class="form-control" id="edit_CHUYEN_NGANH" name="CHUYEN_NGANH" required>
+                </div>
+                <button type="submit" class="btn btn-success">Cập nhật</button>
+                <button type="button" class="btn btn-secondary" onclick="hideEditForm()">Hủy</button>
+            </form>
+        </div>
+
+        {% if students %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Tên Sinh Viên</th>
+                        <th>Ngày Sinh</th>
+                        <th>Mã SV</th>
+                        <th>Chuyên Ngành</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.TEN_SINH_VIEN }}</td>
+                            <td>{{ student.NGAY_SINH }}</td>
+                            <td>{{ student.MA_SV }}</td>
+                            <td>{{ student.CHUYEN_NGANH }}</td>
+                            <td>
+                                <!-- Delete form -->
+                                <form action="{{ url_for('home') }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="delete_student" value="1">
+                                    <input type="hidden" name="MA_SV" value="{{ student.MA_SV }}">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên này?');">Xóa</button>
+                                </form>
+                                <!-- Edit button -->
+                                <button class="btn btn-warning btn-sm" onclick="showEditForm('{{ student.MA_SV }}', '{{ student.TEN_SINH_VIEN }}', '{{ student.NGAY_SINH }}', '{{ student.CHUYEN_NGANH }}')">Sửa</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Không tìm thấy sinh viên nào.</p>
+        {% endif %}
+    </div>
+    
+    <script type="text/javascript">
+        (function(d, m){
+            var kommunicateSettings = 
+                {"appId":"3f54a91a3eb798347e4b3537001144c74","popupWidget":true,"automaticChatOpenOnNavigation":true};
+            var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
+            s.src = "https://widget.kommunicate.io/v2/kommunicate.app";
+            var h = document.getElementsByTagName("head")[0]; h.appendChild(s);
+            window.kommunicate = m; m._globals = kommunicateSettings;
+        })(document, window.kommunicate || {});
+    /* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */
+    </script>
+
+    <!-- JavaScript functions to handle form display -->
+    <script>
+        function showAddForm() {
+            document.getElementById('addForm').style.display = 'block';
+            document.getElementById('editForm').style.display = 'none';
+        }
+
+        function hideAddForm() {
+            document.getElementById('addForm').style.display = 'none';
+        }
+
+        function showEditForm(ma_sv, ten_sv, ngay_sinh, chuyen_nganh) {
+            document.getElementById('editForm').style.display = 'block';
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('edit_MA_SV').value = ma_sv;
+            document.getElementById('edit_TEN_SINH_VIEN').value = ten_sv;
+            document.getElementById('edit_NGAY_SINH').value = ngay_sinh;
+            document.getElementById('edit_CHUYEN_NGANH').value = chuyen_nganh;
+        }
+
+        function hideEditForm() {
+            document.getElementById('editForm').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
